@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block content %}
+<form class="panel auth" method="post">{% csrf_token %}
+<h1>{{ heading|default:"Login" }}</h1>{{ form.as_p }}
+<button class="btn">Continue</button>
+<p>Need an account? <a href="/register/">Register here</a></p>
+</form>{% endblock %}

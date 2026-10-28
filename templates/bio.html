@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<form class="panel auth" method="post">{% csrf_token %}
+<h1>Edit profile bio</h1><textarea name="bio" maxlength="250" rows="4"
+placeholder="Tell people about yourself...">{{ profile.bio }}</textarea>
+<button class="btn">Save bio</button></form>{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% block content %}
+<section class="hero"><small>YOUR COMMUNITY</small>
+<h1>Share your world.</h1>
+<p>Connect, share ideas, and discover people.</p></section>
+<div class="columns"><section>
+{% if user.is_authenticated %}
+<form class="panel" method="post" action="/post/">{% csrf_token %}
+<h3>What's on your mind?</h3>
+<textarea name="content" maxlength="1000" required placeholder="Write a post..."></textarea>
+<button class="btn">Publish post</button></form>
+{% else %}
+<div class="panel"><h3>Join the conversation</h3>
+<p>Register to post, comment, like, and follow people.</p>
+<a class="btn" href="/register/">Create account</a></div>
+{% endif %}
+<h2>Community feed</h2>
+{% for p in posts %}
+<article class="panel">
+<div class="author"><a class="avatar" href="/profile/{{ p.author.username }}/">{{ p.author.username|first|upper }}</a>
+<div><b><a href="/profile/{{ p.author.username }}/">@{{ p.author.username }}</a></b>
+<small>{{ p.created|date:"d M Y, H:i" }}</small></div></div>
+<p class="posttext">{{ p.content|linebreaksbr }}</p>
+<div class="actions">
+{% if user.is_authenticated %}
+<form method="post" action="/like/{{ p.id }}/">{% csrf_token %}
+<input type="hidden" name="next" value="feed">
+<button class="linkbtn">{% if user in p.likes.all %}♥ Liked{% else %}♡ Like{% endif %} · {{ p.likes.count }}</button></form>
+{% else %}<span>♡ {{ p.likes.count }} likes</span>{% endif %}
+<span>{{ p.comments.count }} comments</span></div>
+<div class="comments">{% for c in p.comments.all %}
+<p><b><a href="/profile/{{ c.author.username }}/">{{ c.author.username }}</a></b> {{ c.content }}</p>
+{% endfor %}
+{% if user.is_authenticated %}
+<form class="commentform" method="post" action="/comment/{{ p.id }}/">{% csrf_token %}
+<input type="hidden" name="next" value="feed">
+<input name="content" maxlength="500" placeholder="Write a comment..." required>
+<button>Reply</button></form>{% endif %}</div>
+</article>
+{% empty %}<div class="panel">No posts yet. Be the first to post!</div>{% endfor %}
+</section><aside class="panel"><h3>Welcome to Circle</h3>
+<p>Share posts, leave comments, like posts and follow other users.</p>
+{% if user.is_authenticated %}<p>Signed in as <b>{{ user.username }}</b></p>
+<a href="/bio/">Edit your bio</a>{% else %}<a href="/register/">Join the community →</a>{% endif %}
+</aside></div>{% endblock %}

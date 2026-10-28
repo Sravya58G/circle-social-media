@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block content %}
+<section class="panel profile">
+<div class="avatar large">{{ person.username|first|upper }}</div>
+<div class="profileinfo"><small>MEMBER PROFILE</small><h1>@{{ person.username }}</h1>
+<p>{{ person.profile.bio|default:"No bio added yet." }}</p>
+<div class="stats"><span>{{ posts|length }} posts</span>
+<span>{{ followers_count }} followers</span><span>{{ following_count }} following</span></div></div>
+{% if user.is_authenticated %}
+{% if user == person %}<a class="btn" href="/bio/">Edit bio</a>
+{% else %}<form method="post" action="/follow/{{ person.username }}/">{% csrf_token %}
+<button class="btn">{% if is_following %}Unfollow{% else %}Follow{% endif %}</button></form>{% endif %}
+{% endif %}</section>
+<h2>Posts</h2>
+{% for p in posts %}<article class="panel"><p>{{ p.content|linebreaksbr }}</p>
+<small>{{ p.created|date:"d M Y, H:i" }} · {{ p.likes.count }} likes · {{ p.comments.count }} comments</small>
+{% for c in p.comments.all %}<p class="commentline"><b>{{ c.author.username }}</b>: {{ c.content }}</p>{% endfor %}
+</article>{% empty %}<div class="panel">No posts yet.</div>{% endfor %}
+{% endblock %}
